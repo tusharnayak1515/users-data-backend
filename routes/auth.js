@@ -138,8 +138,8 @@ router.put("/editprofile", fetchUser,[
         }
   
         try {
-            let user = await User.findById(userId);
-            if (!user) {
+            let profile = await User.findById(userId);
+            if (!profile) {
                 success = false;
                 return res.status(400).json({ success, error: "User not found!" });
             }
@@ -153,11 +153,11 @@ router.put("/editprofile", fetchUser,[
             let emailUser = null;
             let phoneUSer = null;
   
-            if (email !== user.email) {
+            if (email !== profile.email) {
                 emailUser = await User.findOne({ email: updateduser.email });
             }
   
-            if (phone !== user.phone) {
+            if (phone !== profile.phone) {
                 phoneUSer = await User.findOne({ phone: updateduser.phone });
             }
   
@@ -171,10 +171,10 @@ router.put("/editprofile", fetchUser,[
                 return res.json({ success, error: "This phone is already taken!"});
             }
   
-            user = await User.findByIdAndUpdate(userId, {name: updateduser.name, email: updateduser.email, phone: updateduser.phone},{ new: true })
+            profile = await User.findByIdAndUpdate(userId, {name: updateduser.name, email: updateduser.email, phone: updateduser.phone},{ new: true })
                 .select("-password");
             success = true;
-            return res.status(200).json({ success, user });
+            return res.status(200).json({ success, profile });
         } 
         catch (error) {
             success = false;

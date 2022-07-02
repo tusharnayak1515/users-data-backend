@@ -18,10 +18,10 @@ router.get("/", fetchUser, async (req, res)=> {
             return res.status(404).json({ success, error: "User not found!" });
         }
 
-        const data = await Data.find({user: userId}).limit(5);
+        const allData = await Data.find({user: userId}).limit(5);
 
         success = true;
-        return res.status(200).json({success, data});
+        return res.status(200).json({success, allData});
     } catch (error) {
         success = false;
         return res.status(500).json({success, error: error.message});
@@ -46,8 +46,8 @@ router.post("/add-data", fetchUser,[
     }
 
     try {
-        let user = await User.findById(userId);
-        if (!user) {
+        let profile = await User.findById(userId);
+        if (!profile) {
             success = false;
             return res.status(400).json({ success, error: "User not found!" });
         }
@@ -60,12 +60,12 @@ router.post("/add-data", fetchUser,[
             user: userId
         });
 
-        user = await User.findByIdAndUpdate(userId, {$push: {data: newData}}, { new: true });
+        profile = await User.findByIdAndUpdate(userId, {$push: {data: newData}}, { new: true });
 
         const allData = await Data.find({user: userId}).limit(5);
 
         success = true;
-        return res.status(200).json({ success, user, allData });
+        return res.status(200).json({ success, profile, allData });
     } 
     catch (error) {
         success = false;
@@ -139,8 +139,8 @@ router.delete("/delete-data/:id", fetchUser, async (req, res) => {
     const dataId = req.params.id;
 
     try {
-        let user = await User.findById(userId);
-        if (!user) {
+        let profile = await User.findById(userId);
+        if (!profile) {
             success = false;
             return res.status(400).json({ success, error: "User not found!" });
         }
@@ -156,13 +156,13 @@ router.delete("/delete-data/:id", fetchUser, async (req, res) => {
             return res.status(405).json({success, error: "Not allowed!"});
         }
 
-        user = await User.findByIdAndUpdate(userId, {$pull: {data: dataId}}, {new: true});
+        profile = await User.findByIdAndUpdate(userId, {$pull: {data: dataId}}, {new: true});
         data = await Data.findByIdAndDelete(dataId, { new: true });
 
         const allData = await Data.find({user: userId}).limit(5);
 
         success = true;
-        return res.status(200).json({ success, user, allData });
+        return res.status(200).json({ success, profile, allData });
     } 
     catch (error) {
         success = false;
